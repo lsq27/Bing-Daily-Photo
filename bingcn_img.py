@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''save bing's wallpaper'''
+'''save cn.bing's wallpaper'''
 import re
 from StringIO import StringIO
 
