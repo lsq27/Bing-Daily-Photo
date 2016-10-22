@@ -1,3 +1,3 @@
 # 抓取网页图片
 
-```sudo nautilus 管理员权限打开文件夹 
+* 实现了抓取cn.bing.com的每日图片
