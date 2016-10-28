@@ -9,7 +9,7 @@ import requests
 from PIL import Image
 
 
-def get_image(url):
+def get_image_describe(url):
     '''得到图片'''
     respose = requests.get(url)
     find_url = re.compile(r'g_img={url: "(\S*.jpg)"')
@@ -21,6 +21,7 @@ def get_image(url):
 
 
 def save_image(image, describe):
+    '''保存图片'''
     if image.format == 'JPEG':
         image.save(os.path.expanduser('~') + u'/图片/' + describe + '.jpg')
     elif image.format == 'PNG':
@@ -28,7 +29,7 @@ def save_image(image, describe):
 
 
 def main():
-    image, describe = get_image('http://cn.bing.com/')
+    image, describe = get_image_describe('http://cn.bing.com/')
     save_image(image, describe)
 
 
