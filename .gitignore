@@ -2,3 +2,7 @@
 test.*
 *.jpg
 *.png
+dist
+build
+*.cmd
+python2exe.py
