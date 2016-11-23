@@ -30,13 +30,13 @@ def save_image(this_platform, image, describe):
     if this_platform == 'Windows':
         if os.path.exists(os.path.abspath('.') + '\\' + describe +
                           '.jpg') is False:
-            if image.format == 'JPEG':
-                image.save(os.path.abspath('.') + '\\' + describe + '.jpg')
+            #if image.format == 'JPEG':
+            image.save(os.path.abspath('.') + '\\' + describe + '.jpg')
     elif this_platform == 'Linux':
         if os.path.exists(os.path.abspath('.') + '/' + describe +
                           '.jpg') is False:
-            if image.format == 'JPEG':
-                image.save(os.path.abspath('.') + '/' + describe + '.jpg')
+            #if image.format == 'JPEG':
+            image.save(os.path.abspath('.') + '/' + describe + '.jpg')
         #elif image.format == 'PNG':
         #    image.save(os.path.expanduser('~') + '/图片/' + describe + '.png')
 
@@ -44,8 +44,12 @@ def save_image(this_platform, image, describe):
 def set_wallpaper(this_platform, describe):
     '''设置壁纸'''
     if this_platform == 'Windows':
-        import win32con
-        import win32gui
+        import win32con, win32gui, win32api
+        reg_key = win32api.RegOpenKeyEx(win32con.HKEY_CURRENT_USER,
+                                        "Control Panel\\Desktop", 0,
+                                        win32con.KEY_SET_VALUE)
+        win32api.RegSetValueEx(reg_key, "WallPaper", 0, win32con.REG_SZ,
+                               os.path.abspath('.') + '\\' + describe + '.jpg')
         win32gui.SystemParametersInfo(
             win32con.SPI_SETDESKWALLPAPER,
             os.path.abspath('.') + '\\' + describe + '.jpg',
