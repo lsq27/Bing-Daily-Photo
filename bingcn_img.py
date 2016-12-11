@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''save cn.bing.com's wallpaper'''
+import json
 import os
 import platform
 import re
@@ -14,58 +15,40 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 
-def get_image_and_describe(url):
-    '''得到图片及描述'''
-    respose = requests.get(url)
-    find_url = re.compile(r'g_img={url: "(\S*.jpg)"')
-    find_describe = re.compile(r'class="sc_light" title="(\S*)')
-    image_url = find_url.findall(respose.text)
-    describe = find_describe.findall(respose.text)
-    image = Image.open(StringIO(requests.get(image_url[0]).content))
-    return (image, describe[0])
-
-
-def save_image(this_platform, image, describe):
-    '''保存图片'''
-    if this_platform == 'Windows':
-        if os.path.exists(os.path.abspath('.') + '\\' + describe +
-                          '.jpg') is False:
-            #if image.format == 'JPEG':
-            image.save(os.path.abspath('.') + '\\' + describe + '.jpg')
-    elif this_platform == 'Linux':
-        if os.path.exists(os.path.abspath('.') + '/' + describe +
-                          '.jpg') is False:
-            #if image.format == 'JPEG':
-            image.save(os.path.abspath('.') + '/' + describe + '.jpg')
-        #elif image.format == 'PNG':
-        #    image.save(os.path.expanduser('~') + '/图片/' + describe + '.png')
-
-
-def set_wallpaper(this_platform, describe):
+def set_wallpaper(this_platform, path):
     '''设置壁纸'''
     if this_platform == 'Windows':
         import win32con, win32gui, win32api
         reg_key = win32api.RegOpenKeyEx(win32con.HKEY_CURRENT_USER,
                                         "Control Panel\\Desktop", 0,
                                         win32con.KEY_SET_VALUE)
-        win32api.RegSetValueEx(reg_key, "WallPaper", 0, win32con.REG_SZ,
-                               os.path.abspath('.') + '\\' + describe + '.jpg')
-        win32gui.SystemParametersInfo(
-            win32con.SPI_SETDESKWALLPAPER,
-            os.path.abspath('.') + '\\' + describe + '.jpg',
-            win32con.SPIF_SENDCHANGE)
+        win32api.RegSetValueEx(reg_key, "WallPaper", 0, win32con.REG_SZ, path)
+        win32gui.SystemParametersInfo(win32con.SPI_SETDESKWALLPAPER, path,
+                                      win32con.SPIF_SENDCHANGE)
     elif this_platform == 'Linux':
         os.system("gsettings set org.gnome.desktop.background picture-uri " +
-                  "'file://" + os.path.abspath(
-                      '.') + '/' + describe + '.jpg' + "'")
+                  "'file://" + path + "'")
 
 
 def main():
     '''main'''
-    image, describe = get_image_and_describe('http://cn.bing.com/')
-    system_platform = platform.system()
-    save_image(system_platform, image, describe)
-    set_wallpaper(system_platform, describe)
+    respose = requests.get(
+        'http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=8')
+    data = json.loads(respose.text)
+    for i in range(0, len(data['images'])):
+        describe = re.compile(r'(\S*)').findall(data['images'][i][
+            'copyright'])[0]
+        date = data['images'][i]['enddate']
+        path = os.path.abspath('.') + '/' + date + ' ' + describe + '.jpg'
+
+        if os.path.exists(path) is True:
+            break
+        else:
+            url = data['images'][i]['url']
+            image = Image.open(StringIO(requests.get(url).content))
+            image.save(path)
+            if i == 0:
+                set_wallpaper(platform.system(), path)
 
 
 if __name__ == '__main__':

@@ -2,7 +2,9 @@
 test.*
 *.jpg
 *.png
+*.pyc
 dist
 build
 *.cmd
 python2exe.py
+data.json
