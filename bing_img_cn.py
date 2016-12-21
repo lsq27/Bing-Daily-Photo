@@ -16,7 +16,7 @@ sys.setdefaultencoding('utf8')
 
 
 def set_wallpaper(path):
-    '''设置壁纸'''
+    '''set wallpaper'''
     this_platform = platform.system()
     if this_platform == 'Windows':
         import win32con, win32gui, win32api
@@ -45,7 +45,7 @@ def main():
         if os.path.exists(path) is True:
             break
         else:
-            url = 'http://cn.bing.com' + data['images'][i]['url']
+            url = 'http://www.bing.com' + data['images'][i]['url']
             image = Image.open(StringIO(requests.get(url).content))
             image.save(path)
             if i == 0:
